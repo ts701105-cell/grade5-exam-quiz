@@ -101,6 +101,11 @@ label { display: block; font-weight: 500; margin: 14px 0 6px; }
 .qnum { font-size: .9rem; color: var(--muted); }
 .qcat { margin-left: 6px; }
 .qtext { font-size: 1.2rem; font-weight: 500; margin: 8px 0 16px; }
+.qtable { margin: -6px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.qtable th { background: var(--accent-soft); color: var(--ink); font-weight: 700; white-space: nowrap; }
+.qtable td, .qtable th { font-size: .92rem; }
+.wrong-item .qtable { margin: 6px 0 8px; }
+.qtable td:first-child { white-space: nowrap; font-weight: 700; }
 .opts { display: grid; gap: 10px; }
 .opt {
   text-align: left; padding: 13px 16px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff;

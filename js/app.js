@@ -68,6 +68,12 @@
     });
   }
   const scoreClass = sc => sc >= 90 ? 'good' : sc >= 70 ? 'mid' : 'bad';
+  function tableHtml(t) {
+    if (!t || !t.length) return '';
+    const head = t[0].map(c => `<th>${esc(c)}</th>`).join('');
+    const body = t.slice(1).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+    return `<div class="table-wrap qtable"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
 
   // ---------- 登入 ----------
   function isLoggedIn() { return !!sess.get(KEY.session); }
@@ -232,6 +238,7 @@
         <div class="progress"><div style="width:${answered / total * 100}%"></div></div>
         <div class="qnum">第 ${st.cur + 1} 題<span class="tag qcat">${esc(q.cat)}</span>${q.type === 'tf' ? '<span class="tag qcat">是非題</span>' : ''}</div>
         <div class="qtext">${esc(q.q)}</div>
+        ${tableHtml(q.table)}
         <div class="opts ${q.type === 'tf' ? 'tf' : ''}">${optsHtml}</div>
         ${fb}
         <div class="nav-row">
@@ -291,7 +298,7 @@
       } else {
         wb[q.id] = (wb[q.id] || 0) + 1;
         wrong.push({
-          no: i + 1, qid: q.id, cat: q.cat, q: q.q,
+          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null,
           your: x.pick === null ? '（未作答）' : q.opts[x.pick],
           right: q.opts[q.ans], exp: q.exp
         });
@@ -322,6 +329,7 @@
     return wrong.map(w => `
       <div class="wrong-item">
         <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${esc(w.q)}</div>
+        ${tableHtml(w.table)}
         <div class="a">你的答案：<span class="you">${esc(w.your)}</span>　正確答案：<span class="ok">${esc(w.right)}</span></div>
         <div class="exp">解析：${esc(w.exp)}</div>
       </div>`).join('');
