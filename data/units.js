@@ -5,7 +5,7 @@ window.SUBJECTS = [
     id: 'chinese', name: '國語', version: '康軒', color: '#d9534f',
     units: [
       { id: 'chinese-01', title: '第一課　蚊帳大使', ready: true, file: 'chinese-01.js' },
-      { id: 'chinese-02', title: '第二課　從空中看臺灣', ready: false },
+      { id: 'chinese-02', title: '第二課　從空中看臺灣', ready: true, file: 'chinese-02.js' },
       { id: 'chinese-03', title: '第三課', ready: false },
       { id: 'chinese-04', title: '第四課　恆久的美', ready: false },
       { id: 'chinese-05', title: '第五課　它抓得住你——商標的故事', ready: false },
