@@ -1,0 +1,39 @@
+// 十全國小 五年級上學期 第一次段考範圍
+// ready: true 表示題庫已完成；file 為題庫檔名（放在 data/ 資料夾）
+window.SUBJECTS = [
+  {
+    id: 'chinese', name: '國語', version: '康軒', color: '#d9534f',
+    units: [
+      { id: 'chinese-01', title: '第一課　蚊帳大使', ready: true, file: 'chinese-01.js' },
+      { id: 'chinese-02', title: '第二課　從空中看臺灣', ready: false },
+      { id: 'chinese-03', title: '第三課', ready: false },
+      { id: 'chinese-04', title: '第四課　恆久的美', ready: false },
+      { id: 'chinese-05', title: '第五課　它抓得住你——商標的故事', ready: false },
+      { id: 'chinese-06', title: '第六課　故事「動」起來', ready: false }
+    ]
+  },
+  {
+    id: 'math', name: '數學', version: '南一', color: '#2f7ed8',
+    units: [
+      { id: 'math-01', title: '第一單元', ready: false },
+      { id: 'math-02', title: '第二單元', ready: false },
+      { id: 'math-03', title: '第三單元', ready: false },
+      { id: 'math-04', title: '第四單元', ready: false },
+      { id: 'math-05', title: '第五單元', ready: false }
+    ]
+  },
+  {
+    id: 'social', name: '社會', version: '康軒', color: '#e08a1e',
+    units: [
+      { id: 'social-01', title: '第一單元', ready: false },
+      { id: 'social-02', title: '第二單元', ready: false }
+    ]
+  },
+  {
+    id: 'science', name: '自然', version: '康軒', color: '#3a9d5d',
+    units: [
+      { id: 'science-01', title: '第一單元', ready: false },
+      { id: 'science-02', title: '第二單元', ready: false }
+    ]
+  }
+];
