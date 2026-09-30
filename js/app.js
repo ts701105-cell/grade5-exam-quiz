@@ -8,7 +8,7 @@
   // 帳號:密碼 的 SHA-256（真正的驗證在雲端伺服器進行）
   const HASH = {
     student: 'd9fd94a755b4a9bfbe293a8d76fcc92913a67de71ba62ad5b72c850b44ed2ce1',
-    admin: '293ef363efdf3a6f798529a557144e3aa9f5bdcfc9d18c0964979be0f487ba81'
+    admin: 'c7595f090738978fe662fcab935428497241d0c6f498211c08c27ede5faadc46'
   };
   const STUDENT_NAME = '張嘉祐';
   const API = (window.API_URL || '').trim();
