@@ -169,7 +169,28 @@ td.num { font-variant-numeric: tabular-nums; }
 .pill.mid { color: var(--warn); }
 .pill.bad { color: var(--bad); }
 
+/* 雲端同步狀態 */
+.sync { font-size: .75rem; font-weight: 500; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.15); white-space: nowrap; }
+.sync:empty { display: none; }
+.sync.ok { background: rgba(255,255,255,.18); }
+.sync.warn { background: #f6d58b; color: #5a3d00; }
+.small { font-size: .8rem; }
+
+/* 管理員 */
+.adm-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
+.kpi { text-align: center; padding: 14px 8px; margin-bottom: 0; }
+.kpi b { display: block; font-size: 1.7rem; line-height: 1.2; color: var(--accent); }
+.kpi b.small-b { font-size: .95rem; line-height: 2.2; }
+.kpi span { font-size: .85rem; color: var(--muted); }
+.trend { margin-top: 4px; font-size: .88rem; }
+.pill.bad { color: var(--bad); }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
+.danger-text { color: var(--bad) !important; border-color: var(--bad) !important; }
+select.input { appearance: auto; }
+
 @media (max-width: 560px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
   body { font-size: 16px; }
   .grid { grid-template-columns: repeat(5, 1fr); }
   .opts.tf { grid-template-columns: 1fr; }
@@ -181,3 +202,4 @@ td.num { font-variant-numeric: tabular-nums; }
   body { background: #fff; }
   .card { border: 0; }
 }
+a.btn { text-decoration: none; }
