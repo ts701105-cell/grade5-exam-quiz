@@ -336,7 +336,7 @@
           <h1>${STUDENT_NAME}，加油！</h1>
           <div class="muted">本次登入時間：${fmtTime(login.time)}</div>
         </div>
-        <div class="muted">選一個單元開始測驗，每單元 100 題</div>
+        <div class="muted">選一個單元開始測驗，每次 ${QUIZ_SIZE} 題（從題庫隨機抽題，每次都不一樣）</div>
       </div>`;
     for (const s of window.SUBJECTS) {
       html += `<section class="subject">
@@ -370,6 +370,18 @@
   }
 
   // ---------- 學生：測驗 ----------
+  const QUIZ_SIZE = 50;   // 每次測驗題數（從題庫依題型比例隨機抽題）
+  function drawBalanced(all, size) {
+    if (all.length <= size) return all.slice();
+    const groups = {};
+    all.forEach(q => (groups[q.cat] = groups[q.cat] || []).push(q));
+    const cats = Object.keys(groups);
+    const quota = cats.map(c => ({ c, exact: groups[c].length * size / all.length }));
+    quota.forEach(o => { o.n = Math.floor(o.exact); o.rem = o.exact - o.n; });
+    let left = size - quota.reduce((s, o) => s + o.n, 0);
+    shuffle(quota).sort((a, b) => b.rem - a.rem).forEach(o => { if (left > 0) { o.n++; left--; } });
+    return quota.flatMap(o => shuffle(groups[o.c]).slice(0, o.n));
+  }
   async function startQuiz(unitId, mode) {
     const cur = sess.get(KEY.quiz);
     if (cur && !cur.finished && !confirm('目前有測驗還沒交卷，要放棄它並開始新的嗎？')) { renderQuiz(); return; }
@@ -380,6 +392,8 @@
       const wb = getBook().data[unitId] || {};
       pool = pool.filter(q => wb[q.id]);
       if (!pool.length) { alert('這個單元目前沒有待複習的錯題！'); return; }
+    } else {
+      pool = drawBalanced(pool, QUIZ_SIZE);
     }
     const items = shuffle(pool).map(q => {
       const order = q.type === 'tf' ? q.opts.map((_, i) => i) : shuffle(q.opts.map((_, i) => i));
