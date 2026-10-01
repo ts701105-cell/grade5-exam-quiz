@@ -18,7 +18,7 @@ window.SUBJECTS = [
       { id: 'math-01', title: '第一單元　折線圖', ready: true, file: 'math-01.js' },
       { id: 'math-02', title: '第二單元　因數和倍數', ready: true, file: 'math-02.js' },
       { id: 'math-03', title: '第三單元　多邊形', ready: true, file: 'math-03.js' },
-      { id: 'math-04', title: '第四單元　擴分、約分和通分', ready: false },
+      { id: 'math-04', title: '第四單元　擴分、約分和通分', ready: true, file: 'math-04.js' },
       { id: 'math-05', title: '第五單元　線對稱圖形', ready: false }
     ]
   },

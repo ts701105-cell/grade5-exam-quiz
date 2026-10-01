@@ -40,6 +40,8 @@
 
   // ---------- 小工具 ----------
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 題目文字：[分子/分母] 顯示成上下排列的分數；帶分數寫成 2[1/3]
+  const rich = s => esc(s).replace(/\[([\d□]+)\/([\d□]+)\]/g, '<span class="frac"><span>$1</span><span>$2</span></span>');
   const pad = n => String(n).padStart(2, '0');
   function fmtTime(t) {
     if (!t) return '—';
@@ -430,13 +432,13 @@
       }
       const label = q.type === 'tf' ? q.opts[oi].replace(/^[○✕]\s*/, '') : q.opts[oi];
       return `<button class="${cls}" data-pick="${oi}" ${review && it.pick !== null ? 'disabled' : ''}>
-        <span class="key">${keys[k]}</span><span>${esc(label)}</span></button>`;
+        <span class="key">${keys[k]}</span><span>${rich(label)}</span></button>`;
     }).join('');
 
     let fb = '';
     if (review && it.pick !== null) {
       const ok = it.pick === q.ans;
-      fb = `<div class="feedback ${ok ? 'good' : 'bad'}"><b>${ok ? '答對了！' : '答錯了，正確答案：' + esc(q.opts[q.ans])}</b><p>${esc(q.exp)}</p></div>`;
+      fb = `<div class="feedback ${ok ? 'good' : 'bad'}"><b>${ok ? '答對了！' : '答錯了，正確答案：' + rich(q.opts[q.ans])}</b><p>${rich(q.exp)}</p></div>`;
     }
 
     const grid = st.items.map((x, i) => {
@@ -455,7 +457,7 @@
         </div>
         <div class="progress"><div style="width:${answered / total * 100}%"></div></div>
         <div class="qnum">第 ${st.cur + 1} 題<span class="tag qcat">${esc(q.cat)}</span>${q.type === 'tf' ? '<span class="tag qcat">是非題</span>' : ''}</div>
-        <div class="qtext">${esc(q.q)}</div>
+        <div class="qtext">${rich(q.q)}</div>
         ${chartHtml(q.chart)}${figHtml(q.fig)}${tableHtml(q.table)}
         <div class="opts ${q.type === 'tf' ? 'tf' : ''}">${optsHtml}</div>
         ${fb}
@@ -546,10 +548,10 @@
     if (!wrong.length) return '<p>全部答對，太厲害了！🎉</p>';
     return wrong.map(w => `
       <div class="wrong-item">
-        <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${esc(w.q)}</div>
+        <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${rich(w.q)}</div>
         ${chartHtml(w.chart)}${figHtml(w.fig)}${tableHtml(w.table)}
-        <div class="a">答案：<span class="you">${esc(w.your)}</span>　正確答案：<span class="ok">${esc(w.right)}</span></div>
-        ${w.exp ? `<div class="exp">解析：${esc(w.exp)}</div>` : ''}
+        <div class="a">答案：<span class="you">${rich(w.your)}</span>　正確答案：<span class="ok">${rich(w.right)}</span></div>
+        ${w.exp ? `<div class="exp">解析：${rich(w.exp)}</div>` : ''}
       </div>`).join('');
   }
 
@@ -776,10 +778,10 @@
     const list = Object.values(agg).sort((a, b) => b.n - a.n || b.last - a.last);
     const items = list.map(x => `
       <div class="wrong-item">
-        <div class="q"><span class="pill bad">錯 ${x.n} 次</span>　<span class="tag">${esc(x.unit)}</span> <span class="tag">${esc(x.cat)}</span><br>${esc(x.q)}</div>
+        <div class="q"><span class="pill bad">錯 ${x.n} 次</span>　<span class="tag">${esc(x.unit)}</span> <span class="tag">${esc(x.cat)}</span><br>${rich(x.q)}</div>
         ${chartHtml(x.chart)}${figHtml(x.fig)}${tableHtml(x.table)}
-        <div class="a">正確答案：<span class="ok">${esc(x.right)}</span></div>
-        <div class="exp">曾經選過：${Object.entries(x.answers).map(([a, n]) => `${esc(a)}（${n}）`).join('、')}・最近一次 ${fmtTime(x.last)}</div>
+        <div class="a">正確答案：<span class="ok">${rich(x.right)}</span></div>
+        <div class="exp">曾經選過：${Object.entries(x.answers).map(([a, n]) => `${rich(a)}（${n}）`).join('、')}・最近一次 ${fmtTime(x.last)}</div>
       </div>`).join('');
     app.innerHTML = admHead('常錯題目', '依答錯次數排序，適合拿來重點複習', 'often') + `
       <div class="card no-print"><label for="flt" style="margin-top:0">選擇單元</label>
