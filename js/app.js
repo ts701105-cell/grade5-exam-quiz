@@ -83,6 +83,66 @@
     const body = t.slice(1).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
     return `<div class="table-wrap qtable"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
+  // 題目附圖：折線圖 / 長條圖（SVG）
+  // chart = { type:'line'|'bar', title, x:[...], series:[{name, values}], yMin, yMax, step, labelEvery, unit, xUnit, brk }
+  function chartHtml(c) {
+    if (!c) return '';
+    const COLORS = ['#1f6f5c', '#d9534f', '#2f7ed8'];
+    const W = 360, H = 250, L = 46, R = 12, T = c.title ? 30 : 14, B = 44;
+    const pw = W - L - R, ph = H - T - B;
+    const yMin = c.yMin || 0, yMax = c.yMax, step = c.step || 1, every = c.labelEvery || 1;
+    const gap = c.brk ? 16 : 0;                        // 省略符號佔的空間
+    const y = v => T + (ph - gap) * (1 - (v - yMin) / (yMax - yMin));
+    const n = c.x.length;
+    const slot = pw / n;
+    const xc = i => L + slot * (i + 0.5);
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" role="img" aria-label="${esc(c.title || '統計圖')}">`;
+    if (c.title) s += `<text x="${W / 2}" y="18" text-anchor="middle" class="ch-title">${esc(c.title)}</text>`;
+    // 格線與刻度
+    let k = 0;
+    for (let v = yMin; v <= yMax + 1e-9; v += step, k++) {
+      const yy = y(v).toFixed(1);
+      s += `<line x1="${L}" y1="${yy}" x2="${W - R}" y2="${yy}" class="${k % every === 0 ? 'ch-grid' : 'ch-grid2'}"/>`;
+      if (k % every === 0) s += `<text x="${L - 6}" y="${(+yy + 4).toFixed(1)}" text-anchor="end" class="ch-tick">${+v.toFixed(2)}</text>`;
+    }
+    // 軸
+    s += `<line x1="${L}" y1="${T - 4}" x2="${L}" y2="${T + ph}" class="ch-axis"/>`;
+    s += `<line x1="${L}" y1="${T + ph}" x2="${W - R}" y2="${T + ph}" class="ch-axis"/>`;
+    if (c.brk) {
+      const b0 = T + ph, b1 = T + ph - gap;
+      s += `<text x="${L - 6}" y="${b0 + 4}" text-anchor="end" class="ch-tick">0</text>`;
+      s += `<rect x="${L - 5}" y="${b1 + 2}" width="10" height="${gap - 4}" fill="var(--paper)"/>`;
+      s += `<polyline points="${L - 5},${b1 + 4} ${L + 5},${b1 + 7} ${L - 5},${b1 + 10} ${L + 5},${b1 + 13}" class="ch-axis" fill="none"/>`;
+    }
+    if (c.unit) s += `<text x="${L - 6}" y="${T - 8}" text-anchor="end" class="ch-unit">(${esc(c.unit)})</text>`;
+    // 橫軸標籤
+    c.x.forEach((lab, i) => { s += `<text x="${xc(i).toFixed(1)}" y="${T + ph + 16}" text-anchor="middle" class="ch-tick">${esc(lab)}</text>`; });
+    if (c.xUnit) s += `<text x="${W - R}" y="${T + ph + 34}" text-anchor="end" class="ch-unit">(${esc(c.xUnit)})</text>`;
+    // 資料
+    const ns = c.series.length;
+    c.series.forEach((se, si) => {
+      const col = COLORS[si % COLORS.length];
+      if (c.type === 'bar') {
+        const bw = Math.min(26, slot * 0.7 / ns);
+        se.values.forEach((v, i) => {
+          const x0 = xc(i) - bw * ns / 2 + bw * si;
+          s += `<rect x="${x0.toFixed(1)}" y="${y(v).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${(T + ph - y(v)).toFixed(1)}" fill="${col}" opacity=".85"/>`;
+        });
+      } else {
+        const pts = se.values.map((v, i) => `${xc(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+        s += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" ${si ? 'stroke-dasharray="6 4"' : ''}/>`;
+        se.values.forEach((v, i) => {
+          s += si ? `<rect x="${(xc(i) - 4).toFixed(1)}" y="${(y(v) - 4).toFixed(1)}" width="8" height="8" fill="${col}"/>`
+            : `<circle cx="${xc(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="${col}"/>`;
+        });
+      }
+    });
+    s += '</svg>';
+    const legend = ns > 1 ? `<div class="ch-legend">${c.series.map((se, si) =>
+      `<span><i style="background:${COLORS[si % COLORS.length]}"></i>${esc(se.name)}</span>`).join('')}</div>` : '';
+    return `<div class="chart-box">${s}${legend}</div>`;
+  }
+
   function device(ua) {
     ua = ua || '';
     const os = /iPad/.test(ua) ? 'iPad' : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' :
@@ -363,7 +423,7 @@
         <div class="progress"><div style="width:${answered / total * 100}%"></div></div>
         <div class="qnum">第 ${st.cur + 1} 題<span class="tag qcat">${esc(q.cat)}</span>${q.type === 'tf' ? '<span class="tag qcat">是非題</span>' : ''}</div>
         <div class="qtext">${esc(q.q)}</div>
-        ${tableHtml(q.table)}
+        ${chartHtml(q.chart)}${tableHtml(q.table)}
         <div class="opts ${q.type === 'tf' ? 'tf' : ''}">${optsHtml}</div>
         ${fb}
         <div class="nav-row">
@@ -422,7 +482,7 @@
       } else {
         wb[q.id] = (wb[q.id] || 0) + 1;
         wrong.push({
-          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null,
+          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null, chart: q.chart || null,
           your: x.pick === null ? '（未作答）' : q.opts[x.pick],
           right: q.opts[q.ans], exp: q.exp
         });
@@ -454,7 +514,7 @@
     return wrong.map(w => `
       <div class="wrong-item">
         <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${esc(w.q)}</div>
-        ${tableHtml(w.table)}
+        ${chartHtml(w.chart)}${tableHtml(w.table)}
         <div class="a">答案：<span class="you">${esc(w.your)}</span>　正確答案：<span class="ok">${esc(w.right)}</span></div>
         ${w.exp ? `<div class="exp">解析：${esc(w.exp)}</div>` : ''}
       </div>`).join('');
@@ -674,7 +734,7 @@
     ADM.results.filter(r => admFilter === 'all' || r.unitId === admFilter).forEach(r => {
       r.wrong.forEach(w => {
         const k = w.qid || (r.unitId + '|' + w.q);
-        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, answers: {} };
+        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, chart: w.chart, answers: {} };
         agg[k].n++;
         agg[k].last = Math.max(agg[k].last, r.end);
         agg[k].answers[w.your] = (agg[k].answers[w.your] || 0) + 1;
@@ -684,7 +744,7 @@
     const items = list.map(x => `
       <div class="wrong-item">
         <div class="q"><span class="pill bad">錯 ${x.n} 次</span>　<span class="tag">${esc(x.unit)}</span> <span class="tag">${esc(x.cat)}</span><br>${esc(x.q)}</div>
-        ${tableHtml(x.table)}
+        ${chartHtml(x.chart)}${tableHtml(x.table)}
         <div class="a">正確答案：<span class="ok">${esc(x.right)}</span></div>
         <div class="exp">曾經選過：${Object.entries(x.answers).map(([a, n]) => `${esc(a)}（${n}）`).join('、')}・最近一次 ${fmtTime(x.last)}</div>
       </div>`).join('');
