@@ -143,6 +143,25 @@
     return `<div class="chart-box">${s}${legend}</div>`;
   }
 
+  // 題目附圖：幾何圖形
+  // fig = { w, h, polys:[{pts:[[x,y],...], open, dash}], lines:[[x1,y1,x2,y2,dash]], labels:[[x,y,text]], circles:[[cx,cy,r]] }
+  function figHtml(f) {
+    if (!f) return '';
+    const w = f.w || 220, h = f.h || 150;
+    let s = `<svg viewBox="0 0 ${w} ${h}" class="fig-svg" role="img" aria-label="圖形">`;
+    (f.circles || []).forEach(c => { s += `<circle cx="${c[0]}" cy="${c[1]}" r="${c[2]}" class="fig-shape"/>`; });
+    (f.polys || []).forEach(p => {
+      const pts = p.pts.map(q => q.join(',')).join(' ');
+      s += p.open ? `<polyline points="${pts}" class="fig-shape" fill="none"/>`
+        : `<polygon points="${pts}" class="fig-shape${p.fill === false ? ' nofill' : ''}"/>`;
+      if (p.dots) p.pts.forEach(q => { s += `<circle cx="${q[0]}" cy="${q[1]}" r="3" class="fig-dot"/>`; });
+    });
+    (f.paths || []).forEach(d => { s += `<path d="${d}" class="fig-shape"/>`; });
+    (f.lines || []).forEach(l => { s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="fig-line${l[4] ? ' dash' : ''}"/>`; });
+    (f.labels || []).forEach(t => { s += `<text x="${t[0]}" y="${t[1]}" text-anchor="middle" class="fig-label">${esc(t[2])}</text>`; });
+    return `<div class="chart-box fig-box">${s}</svg></div>`;
+  }
+
   function device(ua) {
     ua = ua || '';
     const os = /iPad/.test(ua) ? 'iPad' : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' :
@@ -423,7 +442,7 @@
         <div class="progress"><div style="width:${answered / total * 100}%"></div></div>
         <div class="qnum">第 ${st.cur + 1} 題<span class="tag qcat">${esc(q.cat)}</span>${q.type === 'tf' ? '<span class="tag qcat">是非題</span>' : ''}</div>
         <div class="qtext">${esc(q.q)}</div>
-        ${chartHtml(q.chart)}${tableHtml(q.table)}
+        ${chartHtml(q.chart)}${figHtml(q.fig)}${tableHtml(q.table)}
         <div class="opts ${q.type === 'tf' ? 'tf' : ''}">${optsHtml}</div>
         ${fb}
         <div class="nav-row">
@@ -482,7 +501,7 @@
       } else {
         wb[q.id] = (wb[q.id] || 0) + 1;
         wrong.push({
-          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null, chart: q.chart || null,
+          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null, chart: q.chart || null, fig: q.fig || null,
           your: x.pick === null ? '（未作答）' : q.opts[x.pick],
           right: q.opts[q.ans], exp: q.exp
         });
@@ -514,7 +533,7 @@
     return wrong.map(w => `
       <div class="wrong-item">
         <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${esc(w.q)}</div>
-        ${chartHtml(w.chart)}${tableHtml(w.table)}
+        ${chartHtml(w.chart)}${figHtml(w.fig)}${tableHtml(w.table)}
         <div class="a">答案：<span class="you">${esc(w.your)}</span>　正確答案：<span class="ok">${esc(w.right)}</span></div>
         ${w.exp ? `<div class="exp">解析：${esc(w.exp)}</div>` : ''}
       </div>`).join('');
@@ -734,7 +753,7 @@
     ADM.results.filter(r => admFilter === 'all' || r.unitId === admFilter).forEach(r => {
       r.wrong.forEach(w => {
         const k = w.qid || (r.unitId + '|' + w.q);
-        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, chart: w.chart, answers: {} };
+        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, chart: w.chart, fig: w.fig, answers: {} };
         agg[k].n++;
         agg[k].last = Math.max(agg[k].last, r.end);
         agg[k].answers[w.your] = (agg[k].answers[w.your] || 0) + 1;
@@ -744,7 +763,7 @@
     const items = list.map(x => `
       <div class="wrong-item">
         <div class="q"><span class="pill bad">錯 ${x.n} 次</span>　<span class="tag">${esc(x.unit)}</span> <span class="tag">${esc(x.cat)}</span><br>${esc(x.q)}</div>
-        ${chartHtml(x.chart)}${tableHtml(x.table)}
+        ${chartHtml(x.chart)}${figHtml(x.fig)}${tableHtml(x.table)}
         <div class="a">正確答案：<span class="ok">${esc(x.right)}</span></div>
         <div class="exp">曾經選過：${Object.entries(x.answers).map(([a, n]) => `${esc(a)}（${n}）`).join('、')}・最近一次 ${fmtTime(x.last)}</div>
       </div>`).join('');
