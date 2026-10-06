@@ -32,8 +32,8 @@ window.SUBJECTS = [
   {
     id: 'science', name: '自然', version: '康軒', color: '#3a9d5d',
     units: [
-      { id: 'science-01', title: '第一單元', ready: false },
-      { id: 'science-02', title: '第二單元', ready: false }
+      { id: 'science-01', title: '第一單元　動物世界面面觀', ready: true, file: 'science-01.js' },
+      { id: 'science-02', title: '第二單元　探索聲光世界', ready: true, file: 'science-02.js' }
     ]
   }
 ];
