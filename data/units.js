@@ -25,8 +25,8 @@ window.SUBJECTS = [
   {
     id: 'social', name: '社會', version: '康軒', color: '#e08a1e',
     units: [
-      { id: 'social-01', title: '第一單元', ready: false },
-      { id: 'social-02', title: '第二單元', ready: false }
+      { id: 'social-01', title: '第一單元　臺灣我的家', ready: true, file: 'social-01.js' },
+      { id: 'social-02', title: '第二單元　臺灣的自然環境與生活', ready: true, file: 'social-02.js' }
     ]
   },
   {
