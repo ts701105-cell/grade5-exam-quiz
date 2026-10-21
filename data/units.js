@@ -35,5 +35,12 @@ window.SUBJECTS = [
       { id: 'science-01', title: '第一單元　動物世界面面觀', ready: true, file: 'science-01.js' },
       { id: 'science-02', title: '第二單元　探索聲光世界', ready: true, file: 'science-02.js' }
     ]
+  },
+  {
+    id: 'english', name: '英文', version: '翰林', color: '#7b5ea7',
+    units: [
+      { id: 'english-01', title: 'Starter ＋ Unit 1　What Day Is Today?', ready: true, file: 'english-01.js' },
+      { id: 'english-02', title: 'Unit 2　Do You Have PE Class on Monday?', ready: true, file: 'english-02.js' }
+    ]
   }
 ];

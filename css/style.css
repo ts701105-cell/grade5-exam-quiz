@@ -236,3 +236,6 @@ a.btn { text-decoration: none; }
 .frac > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 3px; }
 .frac > span:last-child { padding: 0 3px; }
 .qtext .frac { font-size: 1em; }
+@media (max-width: 560px) {
+  .qtable td, .qtable th { padding: 7px 4px; font-size: .8rem; }
+}
