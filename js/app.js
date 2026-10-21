@@ -164,6 +164,51 @@
     return `<div class="chart-box fig-box">${s}</svg></div>`;
   }
 
+  // ---------- 聽力：用瀏覽器內建語音唸英文 ----------
+  // audio 可以是一句話，或一段對話（陣列，兩個人輪流，聲音高低不同）
+  const TTS = 'speechSynthesis' in window;
+  let enVoice = null;
+  function pickVoice() {
+    if (!TTS) return null;
+    const vs = speechSynthesis.getVoices().filter(v => /^en(-|_)/i.test(v.lang));
+    enVoice = vs.find(v => /en-US/i.test(v.lang) && /Google|Samantha|Jenny|Aria|Zira/i.test(v.name)) ||
+      vs.find(v => /en-US/i.test(v.lang)) || vs[0] || null;
+    return enVoice;
+  }
+  if (TTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  function speak(audio, slow) {
+    if (!TTS) { alert('這個瀏覽器不支援語音播放，請改用 Chrome 或 Safari。'); return; }
+    speechSynthesis.cancel();
+    const lines = Array.isArray(audio) ? audio : [audio];
+    lines.forEach((t, i) => {
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = 'en-US';
+      if (enVoice || pickVoice()) u.voice = enVoice;
+      u.rate = slow ? 0.6 : 0.9;
+      u.pitch = lines.length > 1 && i % 2 ? 1.35 : 1;
+      speechSynthesis.speak(u);
+    });
+  }
+  function listenHtml(audio) {
+    if (!audio) return '';
+    return `<div class="listen" data-audio='${esc(JSON.stringify(audio))}'>
+      <button class="btn" data-say="1">🔊 播放</button>
+      <button class="btn ghost" data-say="slow">🐢 慢速</button>
+      ${TTS ? '' : '<span class="error">此瀏覽器不支援語音</span>'}
+    </div>`;
+  }
+  function transcriptHtml(audio) {
+    if (!audio) return '';
+    const lines = Array.isArray(audio) ? audio : [audio];
+    return `<div class="transcript">${listenHtml(audio)}<div class="muted">聽力內容：${lines.map(t => '「' + esc(t) + '」').join(' ')}</div></div>`;
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-say]');
+    if (!b) return;
+    const box = b.closest('[data-audio]');
+    try { speak(JSON.parse(box.dataset.audio), b.dataset.say === 'slow'); } catch (err) {}
+  });
+
   function device(ua) {
     ua = ua || '';
     const os = /iPad/.test(ua) ? 'iPad' : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' :
@@ -406,7 +451,8 @@
       unitId, mode, items, cur: 0, start: Date.now(),
       loginId: login.id, loginTime: login.time, finished: false
     });
-    renderQuiz();
+    await renderQuiz();
+    window.scrollTo({ top: 0 });
   }
 
   async function renderQuiz() {
@@ -448,6 +494,7 @@
       return `<button class="${c}" data-go="${i}">${i + 1}</button>`;
     }).join('');
 
+    const autoKey = st.unitId + ':' + st.cur;
     const f = findUnit(st.unitId);
     app.innerHTML = `
       <div class="card">
@@ -458,7 +505,7 @@
         <div class="progress"><div style="width:${answered / total * 100}%"></div></div>
         <div class="qnum">第 ${st.cur + 1} 題<span class="tag qcat">${esc(q.cat)}</span>${q.type === 'tf' ? '<span class="tag qcat">是非題</span>' : ''}</div>
         <div class="qtext">${rich(q.q)}</div>
-        ${chartHtml(q.chart)}${figHtml(q.fig)}${tableHtml(q.table)}
+        ${listenHtml(q.audio)}${chartHtml(q.chart)}${figHtml(q.fig)}${tableHtml(q.table)}
         <div class="opts ${q.type === 'tf' ? 'tf' : ''}">${optsHtml}</div>
         ${fb}
         <div class="nav-row">
@@ -488,7 +535,9 @@
     const next = document.getElementById('next'); if (next) next.onclick = () => go(st.cur + 1);
     const sub = document.getElementById('submit'); if (sub) sub.onclick = submitQuiz;
     document.getElementById('submit2').onclick = submitQuiz;
+    if (q.audio && it.pick === null && lastAuto !== autoKey) { lastAuto = autoKey; setTimeout(() => speak(q.audio), 250); }
   }
+  let lastAuto = '';
 
   function go(i) {
     const s = sess.get(KEY.quiz);
@@ -517,7 +566,7 @@
       } else {
         wb[q.id] = (wb[q.id] || 0) + 1;
         wrong.push({
-          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null, chart: q.chart || null, fig: q.fig || null,
+          no: i + 1, qid: q.id, cat: q.cat, q: q.q, table: q.table || null, chart: q.chart || null, fig: q.fig || null, audio: q.audio || null,
           your: x.pick === null ? '（未作答）' : q.opts[x.pick],
           right: q.opts[q.ans], exp: q.exp
         });
@@ -549,7 +598,7 @@
     return wrong.map(w => `
       <div class="wrong-item">
         <div class="q">第 ${w.no} 題　<span class="tag">${esc(w.cat)}</span><br>${rich(w.q)}</div>
-        ${chartHtml(w.chart)}${figHtml(w.fig)}${tableHtml(w.table)}
+        ${transcriptHtml(w.audio)}${chartHtml(w.chart)}${figHtml(w.fig)}${tableHtml(w.table)}
         <div class="a">答案：<span class="you">${rich(w.your)}</span>　正確答案：<span class="ok">${rich(w.right)}</span></div>
         ${w.exp ? `<div class="exp">解析：${rich(w.exp)}</div>` : ''}
       </div>`).join('');
@@ -769,7 +818,7 @@
     ADM.results.filter(r => admFilter === 'all' || r.unitId === admFilter).forEach(r => {
       r.wrong.forEach(w => {
         const k = w.qid || (r.unitId + '|' + w.q);
-        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, chart: w.chart, fig: w.fig, answers: {} };
+        if (!agg[k]) agg[k] = { n: 0, last: 0, unit: r.unitTitle, q: w.q, cat: w.cat, right: w.right, table: w.table, chart: w.chart, fig: w.fig, audio: w.audio, answers: {} };
         agg[k].n++;
         agg[k].last = Math.max(agg[k].last, r.end);
         agg[k].answers[w.your] = (agg[k].answers[w.your] || 0) + 1;
@@ -779,7 +828,7 @@
     const items = list.map(x => `
       <div class="wrong-item">
         <div class="q"><span class="pill bad">錯 ${x.n} 次</span>　<span class="tag">${esc(x.unit)}</span> <span class="tag">${esc(x.cat)}</span><br>${rich(x.q)}</div>
-        ${chartHtml(x.chart)}${figHtml(x.fig)}${tableHtml(x.table)}
+        ${transcriptHtml(x.audio)}${chartHtml(x.chart)}${figHtml(x.fig)}${tableHtml(x.table)}
         <div class="a">正確答案：<span class="ok">${rich(x.right)}</span></div>
         <div class="exp">曾經選過：${Object.entries(x.answers).map(([a, n]) => `${rich(a)}（${n}）`).join('、')}・最近一次 ${fmtTime(x.last)}</div>
       </div>`).join('');

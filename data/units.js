@@ -40,7 +40,8 @@ window.SUBJECTS = [
     id: 'english', name: '英文', version: '翰林', color: '#7b5ea7',
     units: [
       { id: 'english-01', title: 'Starter ＋ Unit 1　What Day Is Today?', ready: true, file: 'english-01.js' },
-      { id: 'english-02', title: 'Unit 2　Do You Have PE Class on Monday?', ready: true, file: 'english-02.js' }
+      { id: 'english-02', title: 'Unit 2　Do You Have PE Class on Monday?', ready: true, file: 'english-02.js' },
+      { id: 'english-03', title: '🎧 聽力測驗（Starter～Unit 2）', ready: true, file: 'english-03.js' }
     ]
   }
 ];
