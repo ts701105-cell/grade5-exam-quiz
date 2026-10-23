@@ -9,7 +9,8 @@ window.SUBJECTS = [
       { id: 'chinese-03', title: '第三課　攀岩高手', ready: true, file: 'chinese-03.js' },
       { id: 'chinese-04', title: '第四課　恆久的美', ready: true, file: 'chinese-04.js' },
       { id: 'chinese-05', title: '第五課　它抓得住你——商標的故事', ready: true, file: 'chinese-05.js' },
-      { id: 'chinese-06', title: '第六課　故事「動」起來', ready: true, file: 'chinese-06.js' }
+      { id: 'chinese-06', title: '第六課　故事「動」起來', ready: true, file: 'chinese-06.js' },
+      { id: 'chinese-07', title: '學習地圖一、二　譬喻・摹寫・記敘文寫作・自我提問', ready: true, file: 'chinese-07.js' }
     ]
   },
   {
