@@ -27,14 +27,18 @@ window.SUBJECTS = [
     id: 'social', name: '社會', version: '康軒', color: '#e08a1e',
     units: [
       { id: 'social-01', title: '第一單元　臺灣我的家', ready: true, file: 'social-01.js' },
-      { id: 'social-02', title: '第二單元　臺灣的自然環境與生活', ready: true, file: 'social-02.js' }
+      { id: 'social-02', title: '第二單元　臺灣的自然環境與生活', ready: true, file: 'social-02.js' },
+      { id: 'social-03', title: '第三單元　尋根探源話臺灣', ready: true, file: 'social-03.js' },
+      { id: 'social-04', title: '第四單元　大航海時代的臺灣', ready: true, file: 'social-04.js' }
     ]
   },
   {
     id: 'science', name: '自然', version: '康軒', color: '#3a9d5d',
     units: [
       { id: 'science-01', title: '第一單元　動物世界面面觀', ready: true, file: 'science-01.js' },
-      { id: 'science-02', title: '第二單元　探索聲光世界', ready: true, file: 'science-02.js' }
+      { id: 'science-02', title: '第二單元　探索聲光世界', ready: true, file: 'science-02.js' },
+      { id: 'science-03', title: '第三單元　神祕的天空', ready: true, file: 'science-03.js' },
+      { id: 'science-04', title: '第四單元　燃燒與生鏽', ready: true, file: 'science-04.js' }
     ]
   },
   {
