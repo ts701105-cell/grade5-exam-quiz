@@ -4,6 +4,7 @@ window.SUBJECTS = [
   {
     id: 'chinese', name: '國語', version: '康軒', color: '#d9534f',
     units: [
+      { id: 'chinese-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'chinese-mid.js' },
       { id: 'chinese-01', title: '第一課　蚊帳大使', ready: true, file: 'chinese-01.js' },
       { id: 'chinese-02', title: '第二課　從空中看臺灣', ready: true, file: 'chinese-02.js' },
       { id: 'chinese-03', title: '第三課　攀岩高手', ready: true, file: 'chinese-03.js' },
@@ -16,6 +17,7 @@ window.SUBJECTS = [
   {
     id: 'math', name: '數學', version: '南一', color: '#2f7ed8',
     units: [
+      { id: 'math-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'math-mid.js' },
       { id: 'math-01', title: '第一單元　折線圖', ready: true, file: 'math-01.js' },
       { id: 'math-02', title: '第二單元　因數和倍數', ready: true, file: 'math-02.js' },
       { id: 'math-03', title: '第三單元　多邊形', ready: true, file: 'math-03.js' },
@@ -26,6 +28,7 @@ window.SUBJECTS = [
   {
     id: 'social', name: '社會', version: '康軒', color: '#e08a1e',
     units: [
+      { id: 'social-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'social-mid.js' },
       { id: 'social-01', title: '第一單元　臺灣我的家', ready: true, file: 'social-01.js' },
       { id: 'social-02', title: '第二單元　臺灣的自然環境與生活', ready: true, file: 'social-02.js' },
       { id: 'social-03', title: '第三單元　尋根探源話臺灣', ready: true, file: 'social-03.js' },
@@ -35,6 +38,7 @@ window.SUBJECTS = [
   {
     id: 'science', name: '自然', version: '康軒', color: '#3a9d5d',
     units: [
+      { id: 'science-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'science-mid.js' },
       { id: 'science-01', title: '第一單元　動物世界面面觀', ready: true, file: 'science-01.js' },
       { id: 'science-02', title: '第二單元　探索聲光世界', ready: true, file: 'science-02.js' },
       { id: 'science-03', title: '第三單元　神祕的天空', ready: true, file: 'science-03.js' },
@@ -44,6 +48,7 @@ window.SUBJECTS = [
   {
     id: 'english', name: '英文', version: '翰林', color: '#7b5ea7',
     units: [
+      { id: 'english-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'english-mid.js' },
       { id: 'english-01', title: 'Starter ＋ Unit 1　What Day Is Today?', ready: true, file: 'english-01.js' },
       { id: 'english-02', title: 'Unit 2　Do You Have PE Class on Monday?', ready: true, file: 'english-02.js' },
       { id: 'english-03', title: '🎧 聽力測驗（Starter～Unit 2）', ready: true, file: 'english-03.js' }

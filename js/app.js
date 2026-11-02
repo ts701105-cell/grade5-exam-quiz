@@ -41,7 +41,7 @@
   // ---------- 小工具 ----------
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // 題目文字：[分子/分母] 顯示成上下排列的分數；帶分數寫成 2[1/3]
-  const rich = s => esc(s).replace(/\[([\d□]+)\/([\d□]+)\]/g, '<span class="frac"><span>$1</span><span>$2</span></span>');
+  const rich = s => esc(s).replace(/\[([\d□]+)\/([\d□]+)\]/g, '<span class="frac"><span>$1</span><span>$2</span></span>').replace(/\n/g, '<br>');
   const pad = n => String(n).padStart(2, '0');
   function fmtTime(t) {
     if (!t) return '—';
