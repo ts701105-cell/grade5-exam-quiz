@@ -17,7 +17,8 @@ window.SUBJECTS = [
   {
     id: 'math', name: '數學', version: '南一', color: '#2f7ed8',
     units: [
-      { id: 'math-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'math-mid.js' },
+      { id: 'math-mid2', title: '📝 期中考模擬卷（二）（綜合 50 題・新題目）', ready: true, file: 'math-mid2.js' },
+      { id: 'math-mid', title: '📝 期中考模擬卷（一）（綜合 50 題）', ready: true, file: 'math-mid.js' },
       { id: 'math-01', title: '第一單元　折線圖', ready: true, file: 'math-01.js' },
       { id: 'math-02', title: '第二單元　因數和倍數', ready: true, file: 'math-02.js' },
       { id: 'math-03', title: '第三單元　多邊形', ready: true, file: 'math-03.js' },
@@ -28,7 +29,8 @@ window.SUBJECTS = [
   {
     id: 'social', name: '社會', version: '康軒', color: '#e08a1e',
     units: [
-      { id: 'social-mid', title: '📝 期中考模擬卷（綜合 50 題）', ready: true, file: 'social-mid.js' },
+      { id: 'social-mid2', title: '📝 期中考模擬卷（二）（綜合 50 題・新題目）', ready: true, file: 'social-mid2.js' },
+      { id: 'social-mid', title: '📝 期中考模擬卷（一）（綜合 50 題）', ready: true, file: 'social-mid.js' },
       { id: 'social-01', title: '第一單元　臺灣我的家', ready: true, file: 'social-01.js' },
       { id: 'social-02', title: '第二單元　臺灣的自然環境與生活', ready: true, file: 'social-02.js' },
       { id: 'social-03', title: '第三單元　尋根探源話臺灣', ready: true, file: 'social-03.js' },
