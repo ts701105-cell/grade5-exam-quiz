@@ -373,10 +373,27 @@
   }
 
   // ---------- 學生：首頁 ----------
+  // 星星：最高分 ≥90 三顆、≥75 兩顆、≥60 一顆
+  const starsOf = best => best >= 90 ? 3 : best >= 75 ? 2 : best >= 60 ? 1 : 0;
+  const starHtml = n => `<span class="stars" title="${n} 顆星">${'★'.repeat(n)}<span class="off">${'★'.repeat(3 - n)}</span></span>`;
+  let homeFilter = 'all';   // all | todo | weak
   function renderHome() {
     const login = session();
     const results = store.get(KEY.results, []);
     const book = getBook().data;
+    try { homeFilter = localStorage.getItem('g5q.filter') || homeFilter; } catch (e) {}
+    // 先算每個單元的狀態
+    const info = {};
+    let tot = 0, done = 0, stars = 0;
+    for (const s of window.SUBJECTS) for (const u of s.units) {
+      if (!u.ready) continue;
+      const rs = results.filter(r => r.unitId === u.id && r.mode === 'test');
+      const best = rs.reduce((m, r) => Math.max(m, r.score), -1);
+      const st = rs.length ? starsOf(best) : 0;
+      info[u.id] = { rs, best, st, last: rs[rs.length - 1], wcount: Object.keys(book[u.id] || {}).length };
+      tot++; if (rs.length) done++; stars += st;
+    }
+    const pct = tot ? Math.round(done * 100 / tot) : 0;
     let html = `
       <div class="card welcome">
         <div>
@@ -384,34 +401,61 @@
           <div class="muted">本次登入時間：${fmtTime(login.time)}</div>
         </div>
         <div class="muted">選一個單元開始測驗，每次 ${QUIZ_SIZE} 題（從題庫隨機抽題，每次都不一樣）</div>
+      </div>
+      <div class="card overall">
+        <div class="ov-row">
+          <div class="ov-num"><b>${done}</b> / ${tot}<span>單元做過</span></div>
+          <div class="ov-num"><b class="gold">★ ${stars}</b> / ${tot * 3}<span>星星</span></div>
+          <div class="ov-num"><b class="warn">${tot - done}</b><span>還沒做過</span></div>
+        </div>
+        <div class="progress big"><div style="width:${pct}%"></div></div>
+        <div class="muted small">星星看「最高分」：90 分以上 ★★★、75 分以上 ★★、60 分以上 ★。</div>
+        <div class="filters">
+          <button class="chip ${homeFilter === 'all' ? 'on' : ''}" data-filter="all">全部單元</button>
+          <button class="chip ${homeFilter === 'todo' ? 'on' : ''}" data-filter="todo">只看還沒做過的</button>
+          <button class="chip ${homeFilter === 'weak' ? 'on' : ''}" data-filter="weak">只看還沒拿到 3 顆星的</button>
+        </div>
       </div>`;
     for (const s of window.SUBJECTS) {
+      const ready = s.units.filter(u => u.ready);
+      const sDone = ready.filter(u => info[u.id].rs.length).length;
+      const sStars = ready.reduce((a, u) => a + info[u.id].st, 0);
+      const shown = s.units.filter(u => !u.ready ? homeFilter === 'all'
+        : homeFilter === 'todo' ? !info[u.id].rs.length
+        : homeFilter === 'weak' ? info[u.id].st < 3 : true);
+      if (!shown.length) continue;
       html += `<section class="subject">
         <div class="subject-head"><span class="subject-dot" style="background:${s.color}"></span>
-          <h2>${esc(s.name)}</h2><span class="tag">${esc(s.version)}版</span></div>`;
-      for (const u of s.units) {
-        const rs = results.filter(r => r.unitId === u.id && r.mode === 'test');
-        const last = rs[rs.length - 1];
-        const best = rs.reduce((m, r) => Math.max(m, r.score), -1);
-        const wcount = Object.keys(book[u.id] || {}).length;
+          <h2>${esc(s.name)}</h2><span class="tag">${esc(s.version)}版</span>
+          <span class="subj-prog">做過 ${sDone}/${ready.length}・<span class="gold">★ ${sStars}</span>/${ready.length * 3}</span></div>`;
+      for (const u of shown) {
+        const f = info[u.id] || {};
         let meta = '';
         if (!u.ready) meta = '題庫製作中';
-        else if (last) meta = `測驗 ${rs.length} 次・最近 ${last.score} 分・最高 ${best} 分`;
-        else meta = '尚未測驗';
-        html += `<div class="unit ${u.ready ? '' : 'off'}">
+        else if (f.last) meta = `測驗 ${f.rs.length} 次・最近 ${f.last.score} 分・最高 ${f.best} 分`;
+        else meta = '還沒測驗過';
+        const todo = u.ready && !f.rs.length;
+        html += `<div class="unit ${u.ready ? '' : 'off'} ${todo ? 'todo' : ''}">
           <div>
-            <div class="unit-title">${esc(u.title)}</div>
-            <div class="unit-meta">${meta} ${wcount ? `<span class="tag bad">待複習錯題 ${wcount}</span>` : ''}</div>
+            <div class="unit-title">${todo ? '<span class="tag new">還沒做過</span> ' : ''}${esc(u.title)}</div>
+            <div class="unit-meta">${u.ready && f.rs.length ? starHtml(f.st) + ' ' : ''}${meta} ${f.wcount ? `<span class="tag bad">待複習錯題 ${f.wcount}</span>` : ''}</div>
           </div>
           <div class="unit-actions">
             ${u.ready ? `<button class="btn small" data-start="${u.id}">開始測驗</button>` : ''}
-            ${u.ready && wcount ? `<button class="btn small ghost" data-review="${u.id}">複習錯題</button>` : ''}
+            ${u.ready && f.wcount ? `<button class="btn small ghost" data-review="${u.id}">複習錯題</button>` : ''}
           </div>
         </div>`;
       }
       html += `</section>`;
     }
+    if (homeFilter !== 'all' && !html.includes('class="subject"'))
+      html += `<div class="card muted">${homeFilter === 'todo' ? '太棒了！每個單元都做過了。' : '太棒了！每個單元都拿到 3 顆星了。'}</div>`;
     app.innerHTML = html;
+    app.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => {
+      homeFilter = b.dataset.filter;
+      try { localStorage.setItem('g5q.filter', homeFilter); } catch (e) {}
+      renderHome();
+    });
     app.querySelectorAll('[data-start]').forEach(b => b.onclick = () => startQuiz(b.dataset.start, 'test'));
     app.querySelectorAll('[data-review]').forEach(b => b.onclick = () => startQuiz(b.dataset.review, 'review'));
   }

@@ -247,3 +247,22 @@ a.btn { text-decoration: none; }
 .transcript { margin: 6px 0 8px; }
 .transcript .listen { margin: 0 0 6px; padding: 8px; }
 .transcript .listen .btn { font-size: .85rem; padding: 5px 10px; }
+
+/* 首頁進度與星星 */
+.overall { margin-top: 14px; }
+.ov-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.ov-num { flex: 1 1 90px; white-space: nowrap; background: var(--accent-soft); border-radius: 12px; padding: 10px 12px; color: var(--muted); }
+.ov-num b { font-size: 1.3rem; white-space: nowrap; color: var(--ink); margin-right: 2px; }
+.ov-num span { display: block; font-size: .8rem; }
+.gold { color: #d4a017 !important; }
+.warn { color: var(--warn) !important; }
+.progress.big { height: 12px; margin-bottom: 8px; }
+.small { font-size: .8rem; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.chip { border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: .85rem; cursor: pointer; }
+.chip.on { border-color: var(--accent); background: var(--accent); color: #fff; }
+.subj-prog { margin-left: auto; font-size: .85rem; color: var(--muted); white-space: nowrap; }
+.stars { color: #d4a017; letter-spacing: 1px; font-size: 1rem; }
+.stars .off { color: var(--line); }
+.unit.todo { border-left: 5px solid var(--warn); }
+.tag.new { background: #fdf0d8; color: var(--warn); font-weight: 700; }
